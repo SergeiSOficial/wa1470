@@ -1,6 +1,7 @@
 #ifndef _wa1470DEM_H
 #define _wa1470DEM_H
 
+#include <stdint.h>
 
 typedef enum
 {

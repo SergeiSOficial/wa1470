@@ -1,6 +1,8 @@
 #ifndef _wa1470RFE_H
 #define _wa1470RFE_H
 
+#include <stdint.h>
+
 #define FREF					26000000
 #define RFE_DEFAULT_VGA_GAIN	24
 
