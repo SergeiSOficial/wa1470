@@ -5,6 +5,8 @@
 #define DEM_NOISE_TICK 50 //50 ms
 #define DEM_NOISE_AVER 10 //10 times
 
+#define SIZE_NBFI_NOISE_DINAMIC_D 4
+
 dem_packet_st dem_mas[DEM_MAS_SIZE];
 
 dem_packet_info_st dem_info_mas[DEM_MAS_SIZE];
@@ -382,8 +384,7 @@ void wa1470dem_get_spectrum(uint8_t size, float *data)
 
 static uint8_t wa1470dem_get_noise_calc_duration()
 {
-	const uint8_t SIZE_NBFI_NOISE_DINAMIC_D = 4;
-	const uint8_t const uint8_t NBFI_NOISE_DINAMIC_D[SIZE_NBFI_NOISE_DINAMIC_D] = {20, 8, 5, 5};
+	const uint8_t NBFI_NOISE_DINAMIC_D[SIZE_NBFI_NOISE_DINAMIC_D] = {20, 8, 5, 5};
 	const uint8_t NBFI_NOISE_DINAMIC_H[1] = {10};
 	if (current_rx_phy >= DBPSK_100H_PROT_D)
 		return NBFI_NOISE_DINAMIC_H[current_rx_phy - DBPSK_100H_PROT_D];
@@ -391,7 +392,7 @@ static uint8_t wa1470dem_get_noise_calc_duration()
 	{
 		if (current_rx_phy - DBPSK_50_PROT_D >= SIZE_NBFI_NOISE_DINAMIC_D)
 		{
-			NBFI_NOISE_DINAMIC_D[SIZE_NBFI_NOISE_DINAMIC_D - 1];
+			return NBFI_NOISE_DINAMIC_D[SIZE_NBFI_NOISE_DINAMIC_D - 1];
 		}
 		else
 		{
