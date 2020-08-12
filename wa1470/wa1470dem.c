@@ -327,7 +327,7 @@ void wa1470dem_set_freq(uint32_t freq)
 
 static uint32_t wa1470dem_get_rssi_int(_Bool aver_or_max)
 {
-	uint32_t data[32];
+	uint32_t data[32] = {0};
 	uint8_t size = 0;
 	uint32_t rssi = 0;
 	uint32_t max = 0;
