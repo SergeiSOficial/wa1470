@@ -6,13 +6,13 @@ _Bool rfe_pll_mode_fractional = 0;
 void wa1470rfe_init()
 {
 	wa1470_hal->__wa1470_chip_enable();
-	
-        wa1470_spi_wait_for(RFE_INIT_DONE, 1, 0x01);
+
+    wa1470_spi_wait_for(RFE_INIT_DONE, 1, 0x01);
 
 	wa1470rfe_set_mode(RFE_MODE_IDLE);
 	wa1470_spi_write8(RFE_RX_MX_CTRL, 87);
 	wa1470_spi_write8(RFE_ADC_REF, 222);
-        wa1470_spi_write8(RFE_BYPASS, 218);
+    wa1470_spi_write8(RFE_BYPASS, 218);
 	wa1470_spi_write8(RFE_ADC_COMPVALID, 23);
 	wa1470_spi_write8(RFE_GP_ADC_SETTING, 115);
 	wa1470_spi_write8(RFE_GP_ADC_DELAY, 120);
@@ -23,17 +23,17 @@ void wa1470rfe_init()
 	wa1470_spi_write8(RFE_CLKGEN_SETTING_2, 100);
 	wa1470_spi_write8(RFE_ADC_Q_SETTINGS, 1);
 	wa1470_spi_write8(RFE_TX_DAC_CLK, 107);
-	wa1470_spi_write8(RFE_LOW_POWER, 16);  
-        wa1470_spi_write8(RFE_PLL_LOCK, 251);
-        wa1470_spi_write8(RFE_POWER_CONTROL, 0xE0);
+	wa1470_spi_write8(RFE_LOW_POWER, 16);
+    wa1470_spi_write8(RFE_PLL_LOCK, 251);
+    wa1470_spi_write8(RFE_POWER_CONTROL, 0xE0);
 
 	wa1470rfe_set_pll_mode(RFE_PLL_MODE_FRACTIONAL);
-	
+
 	if(send_by_dbpsk)
 		wa1470rfe_set_tx_mode(RFE_TX_MODE_BPSK);
 	else
 		wa1470rfe_set_tx_mode(RFE_TX_MODE_I_Q);
-	
+
 	wa1470rfe_set_rx_mode(RFE_RX_MODE_LONF);
 	wa1470rfe_set_rx_gain(RFE_DEFAULT_VGA_GAIN);
 
@@ -62,7 +62,7 @@ static void wa1470rfe_set_rx_gain_custom(uint8_t LNA_GAIN, uint8_t MIXER_GAIN, u
 	wa1470_spi_read(RFE_RX_LNA, data_r, 1);
 	wa1470_spi_write8(RFE_RX_LNA, (data_r[0]&(256-8)) + (LNA_GAIN<<1) +	(data_r[0]&1) );
 	wa1470_spi_write8(RFE_RX_MX_CTRL, (wa1470_spi_read8(RFE_RX_MX_CTRL)&0xc3) + (MIXER_GAIN << 2));
-	wa1470_spi_write8(RFE_RX_VGA_CTRL, ((8 - VGA1_GAIN)<<4) + (8 - VGA2_GAIN)); 
+	wa1470_spi_write8(RFE_RX_VGA_CTRL, ((8 - VGA1_GAIN)<<4) + (8 - VGA2_GAIN));
 	rfe_rx_total_vga_gain = (VGA1_GAIN + VGA2_GAIN)*3;
 }
 
@@ -86,7 +86,7 @@ void wa1470rfe_set_rx_gain(uint8_t gain)
 
 void wa1470rfe_set_pll_mode(rfe_pll_mode_s mode)
 {
-	wa1470_spi_write8(RFE_VCO_CURRENT, (uint8_t)mode); 
+	wa1470_spi_write8(RFE_VCO_CURRENT, (uint8_t)mode);
 	rfe_pll_mode_fractional = (mode == RFE_PLL_MODE_FRACTIONAL);
 }
 
@@ -114,7 +114,7 @@ void wa1470rfe_set_rx_mode(rfe_rx_mode_s mode)
 void wa1470rfe_set_tx_power(int8_t power)
 {
         power = ((int16_t)(power + 13))*21/28;
-	wa1470_spi_write8( RFE_POWER_CONTROL, (wa1470_spi_read8(RFE_POWER_CONTROL)&0xe0) + (power&0x1f));        
+	wa1470_spi_write8( RFE_POWER_CONTROL, (wa1470_spi_read8(RFE_POWER_CONTROL)&0xe0) + (power&0x1f));
 }
 
 void wa1470rfe_set_band(rfe_band_s band)
@@ -133,7 +133,7 @@ _Bool wa1470rfe_set_freq(uint32_t freq)
 {
 	uint32_t FREQ;
 
-	if(freq < 600000000) 
+	if(freq < 600000000)
 	{
 		FREQ	= freq*2;
 		wa1470rfe_set_band(RFE_BAND_450);
@@ -143,7 +143,7 @@ _Bool wa1470rfe_set_freq(uint32_t freq)
 		FREQ	= freq;
 		wa1470rfe_set_band(RFE_BAND_900);
 	}
-	
+
         uint8_t PLL_INT = FREQ/FREF;
 	uint32_t PLL_FRAQ = (((uint64_t)(FREQ%FREF)) << 22)/FREF;
         if(rfe_pll_mode_fractional) wa1470_spi_write8(RFE_PLL_NINT, ((uint8_t)PLL_INT << 2) + 2);
@@ -151,7 +151,7 @@ _Bool wa1470rfe_set_freq(uint32_t freq)
         wa1470_spi_write8(RFE_PLL_NFRAQ0, PLL_FRAQ & 0xff);
 	wa1470_spi_write8(RFE_PLL_NFRAQ1, (PLL_FRAQ >> 8) & 0xff);
 	wa1470_spi_write8(RFE_PLL_NFRAQ2, ((PLL_FRAQ >> 15) & 0x7e) + 1);
-              
+
 	uint8_t tmp = wa1470_spi_read8(RFE_VCO_RUN);
 	wa1470_spi_write8(RFE_VCO_RUN, tmp&0xdf);
 	wa1470_spi_write8(RFE_VCO_RUN, tmp|0x20);

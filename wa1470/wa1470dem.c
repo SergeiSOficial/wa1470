@@ -349,7 +349,7 @@ static uint32_t wa1470dem_get_rssi_int(_Bool aver_or_max)
 		size = 16;
 		break;
 	}
-	wa1470_spi_read(DEM_FFT_READ_BUF, (uint8_t *)(&data[0]), 4 * size);
+	wa1470_spi_read(DEM_FFT_READ_BUF, (uint8_t *)(&data[0]), size); //4 * size
 	wa1470_spi_write8(DEM_FFT_READ_BUF + 100, 0);
 
 	for (int i = 0; i != size; i++)

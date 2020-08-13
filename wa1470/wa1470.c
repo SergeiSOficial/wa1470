@@ -14,23 +14,22 @@ char wa1470_log_string[256];
 
 void wa1470_spi_write(uint16_t address, uint8_t *data, uint8_t length)
 {
-        wa1470_hal->__wa1470_disable_pin_irq();
-        wa1470_hal->__spi_cs_set(0);
+    wa1470_hal->__wa1470_disable_pin_irq();
+    wa1470_hal->__spi_cs_set(0);
 	address |= 0x8000;
 	wa1470_hal->__spi_tx(((uint8_t*)(&address)) + 1, 1);
 	wa1470_hal->__spi_tx(((uint8_t*)(&address)), 1);
 	wa1470_hal->__spi_tx(data, length);
 	wa1470_hal->__spi_cs_set(1);
-        wa1470_hal->__wa1470_enable_pin_irq();
+    wa1470_hal->__wa1470_enable_pin_irq();
 }
 
 void wa1470_spi_read(uint16_t address, uint8_t *data, uint8_t length)
 {
-        wa1470_hal->__wa1470_disable_pin_irq();
+    wa1470_hal->__wa1470_disable_pin_irq();
 	wa1470_hal->__spi_cs_set(0);
 	address &= 0x7fff;
-	wa1470_hal->__spi_tx(((uint8_t*)(&address)) + 1, 1);
-	wa1470_hal->__spi_tx(((uint8_t*)(&address)), 1);
+	wa1470_hal->__spi_tx((uint8_t*)(&address), 2);
 	wa1470_hal->__spi_rx(data, length);
 	wa1470_hal->__spi_cs_set(1);
 	wa1470_hal->__wa1470_enable_pin_irq();
@@ -64,12 +63,12 @@ void wa1470_init(_Bool send_by_bpsk_pin, uint32_t preambule, wa1470_HAL_st* hal_
 {
         wa1470_hal = hal_ptr;
         wa1470_scheduler = scheduler;
-        if((wa1470_hal == 0) || (wa1470_scheduler == 0)) while(1); //HAL and scheduler pointers must be provided 
+        if((wa1470_hal == 0) || (wa1470_scheduler == 0)) while(1); //HAL and scheduler pointers must be provided
         send_by_dbpsk = send_by_bpsk_pin;
 	//wa1470rfe_init();
         wa1470dem_init(preambule);
-	wa1470mod_init(send_by_dbpsk); 
-        
+	wa1470mod_init(send_by_dbpsk);
+
 }
 
 void wa1470_reinit(uint32_t preambule)
@@ -78,14 +77,14 @@ void wa1470_reinit(uint32_t preambule)
         wa1470_hal->__wa1470_nop_dalay_ms(1);
         wa1470rfe_init();
         wa1470dem_init(preambule);
-  	wa1470mod_init(send_by_dbpsk); 
+  	wa1470mod_init(send_by_dbpsk);
 }
 
 void wa1470_deinit()
 {
         wa1470_hal->__wa1470_disable_pin_irq();
         wa1470rfe_deinit();
-        
+
 }
 
 void wa1470_isr()
