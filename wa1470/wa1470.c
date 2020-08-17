@@ -29,7 +29,8 @@ void wa1470_spi_read(uint16_t address, uint8_t *data, uint8_t length)
     wa1470_hal->__wa1470_disable_pin_irq();
 	wa1470_hal->__spi_cs_set(0);
 	address &= 0x7fff;
-	wa1470_hal->__spi_tx((uint8_t*)(&address), 2);
+    wa1470_hal->__spi_tx(((uint8_t*)(&address)) + 1, 1);
+	wa1470_hal->__spi_tx(((uint8_t*)(&address)), 1);
 	wa1470_hal->__spi_rx(data, length);
 	wa1470_hal->__spi_cs_set(1);
 	wa1470_hal->__wa1470_enable_pin_irq();
