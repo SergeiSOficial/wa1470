@@ -88,11 +88,11 @@ static void wa1470dem_process_messages(struct scheduler_desc *desc)
 	wa1470_hal->__wa1470_disable_pin_irq();
 
 	tmp_dem_mess_received = dem_mess_received;
-	memcpy(tmp_dem_mas, dem_mas, sizeof(tmp_dem_mas));
-	memcpy(tmp_dem_info_mas, dem_info_mas, sizeof(tmp_dem_info_mas));
+	memcpy_s(tmp_dem_mas, sizeof(tmp_dem_mas), dem_mas, sizeof(tmp_dem_mas));
+	memcpy_s(tmp_dem_info_mas, sizeof(tmp_dem_info_mas), dem_info_mas, sizeof(tmp_dem_info_mas));
 	dem_mess_received = 0;
-	memset(dem_mas, 0, sizeof(dem_mas));
-	memset(dem_info_mas, 0, sizeof(dem_info_mas));
+	memset_s(dem_mas, sizeof(dem_mas), 0, sizeof(dem_mas));
+	memset_s(dem_info_mas, sizeof(dem_info_mas), 0, sizeof(dem_info_mas));
 
 	wa1470_hal->__wa1470_enable_pin_irq();
 
@@ -103,10 +103,10 @@ static void wa1470dem_process_messages(struct scheduler_desc *desc)
 		for (uint8_t i = 0; i != tmp_dem_mess_received; i++)
 		{
 #ifdef WA1470_LOG
-			sprintf(wa1470_log_string, "%05u: PLD: ", (uint16_t)(wa1470_scheduler->__scheduler_curr_time() & 0xffff));
+			sprintf_s(wa1470_log_string, "%05u: PLD: ", (uint16_t)(wa1470_scheduler->__scheduler_curr_time() & 0xffff));
 			for (uint8_t k = 0; k != 8; k++)
-				sprintf(wa1470_log_string + strlen(wa1470_log_string), "%02X", tmp_dem_mas[i].packet.payload[k]);
-			sprintf(wa1470_log_string + strlen(wa1470_log_string), " IT crypto=%3d COP=%2d(%2d) FREQ=%2d", tmp_dem_mas[i].packet.iter, tmp_dem_info_mas[i].num_of_crc + tmp_dem_info_mas[i].num_of_zigzag, tmp_dem_info_mas[i].num_of_zigzag, tmp_dem_mas[i].freq & 0x1f);
+				sprintf_s(wa1470_log_string + strlen(wa1470_log_string), "%02X", tmp_dem_mas[i].packet.payload[k]);
+			sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " IT crypto=%3d COP=%2d(%2d) FREQ=%2d", tmp_dem_mas[i].packet.iter, tmp_dem_info_mas[i].num_of_crc + tmp_dem_info_mas[i].num_of_zigzag, tmp_dem_info_mas[i].num_of_zigzag, tmp_dem_mas[i].freq & 0x1f);
 #endif
 			uint64_t rssi64 = tmp_dem_mas[i].rssi_39_32;
 			rssi64 <<= 32;
@@ -119,27 +119,27 @@ static void wa1470dem_process_messages(struct scheduler_desc *desc)
 			tmp_dem_info_mas[i].snr = (uint8_t)snr;
 #ifdef WA1470_LOG
 			float dsnr = log10f(((float)rssi64) / tmp_dem_mas[i].noise / 4) * 20;
-			sprintf(wa1470_log_string + strlen(wa1470_log_string), " RSSI=%ld", tmp_dem_mas[i].rssi);
-			sprintf(wa1470_log_string + strlen(wa1470_log_string), " LRSSI=%f", rssi);
-			sprintf(wa1470_log_string + strlen(wa1470_log_string), " SNR=%f", rssi - dem_noise);
-			sprintf(wa1470_log_string + strlen(wa1470_log_string), " DSNR=%f", dsnr);
+			sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " RSSI=%ld", tmp_dem_mas[i].rssi);
+			sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " LRSSI=%f", rssi);
+			sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " SNR=%f", rssi - dem_noise);
+			sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " DSNR=%f", dsnr);
 
 			switch (current_rx_phy)
 			{
 			case DBPSK_50_PROT_D:
-				sprintf(wa1470_log_string + strlen(wa1470_log_string), " 50BPS");
+				sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " 50BPS");
 				break;
 			case DBPSK_400_PROT_D:
-				sprintf(wa1470_log_string + strlen(wa1470_log_string), " 400BPS");
+				sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " 400BPS");
 				break;
 			case DBPSK_3200_PROT_D:
-				sprintf(wa1470_log_string + strlen(wa1470_log_string), " 3200BPS");
+				sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " 3200BPS");
 				break;
 			case DBPSK_25600_PROT_D:
-				sprintf(wa1470_log_string + strlen(wa1470_log_string), " 25600BPS");
+				sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " 25600BPS");
 				break;
 			case DBPSK_100H_PROT_D:
-				sprintf(wa1470_log_string + strlen(wa1470_log_string), " 100HBPS");
+				sprintf_s(wa1470_log_string + strlen(wa1470_log_string), " 100HBPS");
 				break;
 			}
 			wa1470_hal->__wa1470_log_send_str(wa1470_log_string);
@@ -261,7 +261,7 @@ void wa1470dem_set_bitrate(dem_bitrate_s bitrate)
 	wa1470dem_reset();
 
 #ifdef WA1470_LOG
-	sprintf(wa1470_log_string, "%05u: dem_set_bitrate to %d", ((uint16_t)(wa1470_scheduler->__scheduler_curr_time() & 0xffff)), bitrate);
+	sprintf_s(wa1470_log_string, "%05u: dem_set_bitrate to %d", ((uint16_t)(wa1470_scheduler->__scheduler_curr_time() & 0xffff)), bitrate);
 	wa1470_hal->__wa1470_log_send_str(wa1470_log_string);
 #endif
 }
@@ -318,9 +318,11 @@ void wa1470dem_set_freq(uint32_t freq)
 	case DBPSK_100H_PROT_D:
 		wa1470rfe_set_freq(freq);
 		break;
+	default:
+		break;
 	}
 #ifdef WA1470_LOG
-	sprintf(wa1470_log_string, "%05u: dem_set_freq to %ld", ((uint16_t)(wa1470_scheduler->__scheduler_curr_time() & 0xffff)), freq);
+	sprintf_s(wa1470_log_string, "%05u: dem_set_freq to %ld", ((uint16_t)(wa1470_scheduler->__scheduler_curr_time() & 0xffff)), freq);
 	wa1470_hal->__wa1470_log_send_str(wa1470_log_string);
 #endif
 }
@@ -347,6 +349,8 @@ static uint32_t wa1470dem_get_rssi_int(_Bool aver_or_max)
 		break;
 	case DBPSK_100H_PROT_D:
 		size = 16;
+		break;
+	default:
 		break;
 	}
 	wa1470_spi_read(DEM_FFT_READ_BUF, (uint8_t *)(&data[0]), size); //4 * size

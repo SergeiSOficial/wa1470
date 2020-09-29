@@ -25,7 +25,7 @@ static void	wa1470mod_call_TX_finished(struct scheduler_desc *desc)
 void wa1470_tx_finished()
 {
   #ifdef WA1470_LOG
-        sprintf(wa1470_log_string, "%05u: TX finished ", (uint16_t)(wa1470_scheduler->__scheduler_curr_time()&0xffff));
+        sprintf_s(wa1470_log_string, "%05u: TX finished ", (uint16_t)(wa1470_scheduler->__scheduler_curr_time()&0xffff));
 	wa1470_hal->__wa1470_log_send_str(wa1470_log_string);
   #endif
  	wa1470_scheduler->__scheduler_add_task(&mod_callTXfinished_desc,	wa1470mod_call_TX_finished, RELATIVE, MILLISECONDS(1));
@@ -132,7 +132,7 @@ void wa1470mod_set_bitrate(mod_bitrate_s bitrate)
 void wa1470mod_set_freq(uint32_t freq)
 {
 #ifdef WA1470_LOG
-        sprintf(wa1470_log_string, "%05u: mod_set_freq to %ld", ((uint16_t)(wa1470_scheduler->__scheduler_curr_time()&0xffff)), freq);
+        sprintf_s(wa1470_log_string, "%05u: mod_set_freq to %ld", ((uint16_t)(wa1470_scheduler->__scheduler_curr_time()&0xffff)), freq);
 	wa1470_hal->__wa1470_log_send_str(wa1470_log_string);
 #endif
 	if(send_by_dbpsk == WA1470_SEND_BY_BPSK_PIN)
